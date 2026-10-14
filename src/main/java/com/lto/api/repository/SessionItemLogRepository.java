@@ -25,4 +25,26 @@ public interface SessionItemLogRepository extends JpaRepository<SessionItemLog, 
             ) mastered
             """, nativeQuery = true)
     long countMastered(@Param("userId") int userId, @Param("domainId") int domainId);
+
+    // For the admin dashboard: the questions users get wrong most often.
+    interface MissedQuestion {
+        Integer getQuestionId();
+        String getQuestionText();
+        Long getTimesWrong();
+        Long getTimesAnswered();
+    }
+
+    @Query(value = """
+            SELECT q.question_id AS questionId,
+                   q.question_text AS questionText,
+                   CAST(SUM(CASE WHEN l.is_correct = 0 THEN 1 ELSE 0 END) AS SIGNED) AS timesWrong,
+                   COUNT(l.selected_choice) AS timesAnswered
+            FROM tbl_session_item_logs l
+            JOIN tbl_question_bank q ON q.question_id = l.question_id
+            GROUP BY q.question_id, q.question_text
+            HAVING timesWrong > 0
+            ORDER BY timesWrong DESC
+            LIMIT 5
+            """, nativeQuery = true)
+    List<MissedQuestion> findMostMissed();
 }
