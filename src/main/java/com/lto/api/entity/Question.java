@@ -17,9 +17,13 @@ public class Question {
     private String vehicleType;       // MOTORCYCLE, LIGHT, HEAVY, BUS
     private String questionText;
     private String graphicPath;
+    @Column(name = "choice_a")
     private String choiceA;
+    @Column(name = "choice_b")
     private String choiceB;
+    @Column(name = "choice_c")
     private String choiceC;
+    @Column(name = "choice_d")
     private String choiceD;
     private Integer correctChoice;
     private String explanationText;
